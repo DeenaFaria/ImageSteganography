@@ -147,8 +147,11 @@ def encode(input_filepath,text,output_filepath,avg,password=None,progressBar=Non
                 pixel += 1
                 modified_bits += 1
 
-            pixel=pixel+pixel_jump
+            
             img[a, b, 0] = pixel
+
+            if modified_bits>=32:
+                b=b+pixel_jump
 
             if completed:
                 break
@@ -176,6 +179,7 @@ def decode(avg,input_filepath,password=None,progressBar=None):
         raise FileError("The image file '{}' is inaccessible".format(input_filepath))
     height,width = img.shape[0],img.shape[1]
     encoding_capacity = height*width
+    flag=0
  
     lp=encoding_capacity-avg
     i=int(avg/width)
@@ -198,9 +202,12 @@ def decode(avg,input_filepath,password=None,progressBar=None):
                 pixel_jump = int(lp/number_of_bits)
                 result = '' #reset result to null
                 extracted_bits = 0 #reset the value
+                flag=1
 
-            pixel=pixel+pixel_jump
+            
             img[a, b, 0] = pixel
+            if flag==1:
+                b=b+pixel_jump
                 
                 
             if extracted_bits == number_of_bits: #If the number of the extracted bits matches the data length
