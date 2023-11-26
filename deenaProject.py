@@ -88,7 +88,7 @@ def encode(input_filepath,text,output_filepath,avg):
 
     data = text
     lm=len(data) #length of the message
-    print("Data length"+str(lm))
+    print("Data length:"+str(lm))
 
     data_length = bin(lm)[2:].zfill(32) #Converts the length to binary and inserts zeros to ensure that first 32 bits contains the data length 
     
@@ -111,29 +111,46 @@ def encode(input_filepath,text,output_filepath,avg):
     k1=avg #user provided stego key
 
     lp=encoding_capacity-avg #Number of available pixels for encoding
+    print("Old lp="+str(lp))
     
-    if lm>=lp: #If the length of the data is larger than the number of the available pixels
-        avg=(encoding_capacity)%lm #define a new stego key
-        i=int(avg/width)
-        j=avg-i*width
-        i=i+1
-        #print("Your Stego Key: "+str(avg))
-    else: #Retains the original stego key
-        i=int(k1/width)
-        j=k1-i*width
-        avg=k1
-        #print("Your Stego Key: "+str(avg))
+    # Update the starting point (i, j) based on K2
+    if lm > lp:  # If the length of the data is larger than the number of available pixels
+        k2 = encoding_capacity % lm  # Define a new stego key
+        i = int(k2 / width)
+        j = (k2 - i * width)%width
+        i += 1  # Increment i by 1
+        lp = encoding_capacity - k2
 
-    
-    
-        
+    else:
+        # Retain the original stego key
+        i = int(k1 / width)
+        j = (k1 - i * width)%width
+        i+=1
+        lp = encoding_capacity - k1
+
+    print("New lp="+str(lp))
+
+
+    print("width"+str(width))    
     pixel_jump = int(lp / lm)  # Calculate pixel_jump based on available pixels and data length
     print(pixel_jump)
+
     
 
+    ijump = int(pixel_jump / width)
+    jjump = (pixel_jump - ijump * width)%width
+    ijump+=1
+
+    print("i,j,ijump,jjump"+str(":")+str(i)+","+str(j)+","+str(ijump)+","+str(jjump))
+    
+    counter=0
+    new_counter=0
+    res=0
+
+
     # Encoding process
-    for a in range(i, height):
-        b = j  # Initialize b to the starting column index
+    for a in range(i, height,ijump):
+        b=j
         while b < width:
             pixel = img[a, b, 0]  # Seed pixel on red channel
             try:
@@ -151,12 +168,17 @@ def encode(input_filepath,text,output_filepath,avg):
 
             img[a, b, 0] = pixel
 
-
-            b += pixel_jump  # Skip by pixel_jump
+            
+            b += jjump  # Skip by pixel_jump
+            counter+=1
+            
 
             if completed:
                 break
-        j=0
+
+
+        j=0   
+     
 
         if completed:
             break
@@ -185,24 +207,39 @@ def decode(lm,avg,input_filepath):
 
     lp=encoding_capacity-avg #Number of available pixels for encoding
     
-    if lm>=lp: #If the length of the data is larger than the number of the available pixels
-        avg=(encoding_capacity)%lm #define a new stego key
-        i=int(avg/width)
-        j=avg-i*width
-        i=i+1
-        #print("Your Stego Key: "+str(avg))
-    else: #Retains the original stego key
-        i=int(k1/width)
-        j=k1-i*width
-        avg=k1
-        #print("Your Stego Key: "+str(avg))
-    data_length=lm
+    # Update the starting point (i, j) based on K2
+    if lm > lp:  # If the length of the data is larger than the number of available pixels
+        k2 = encoding_capacity % lm  # Define a new stego key
+        i = int(k2 / width)
+        j = k2 - i * width
+        i += 1  # Increment i by 1
+        lp = encoding_capacity - k2
+ 
+    else:
+        # Retain the original stego key
+        i = int(k1 / width)
+        j = k1 - i * width
+        i+=1
+        lp = encoding_capacity - k1
+   
 
+
+    data_length=lm
+   
     pixel_jump=int(lp/lm)
+
+    ijump = int(pixel_jump / width)
+    jjump = (pixel_jump - ijump * width)%width
+    ijump+=1
+    
     nb=data_length*7
     
-
-    for a in range(i,height):
+    counter=0
+    new_counter=0
+    res=0
+    
+    
+    for a in range(i,height,ijump):
         b=j
         while b < width:
             pixel=img[a,b,0]
@@ -211,19 +248,20 @@ def decode(lm,avg,input_filepath):
             
             extracted_bits += 1
 
-            b=b+pixel_jump
-            
+            b=b+jjump
+            counter+=1
                 
             if extracted_bits == nb: #If the number of the extracted bits matches the data length of binary bits
                 completed = True
                 break
-            
-            
 
-        j=0 #reset to first pixel
-            
+        j=0  
+
+   
         if completed:
             break
+        
+
         
    
     return bin2str(result)

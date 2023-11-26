@@ -88,7 +88,7 @@ def encode(input_filepath,text,output_filepath,avg):
 
     data = text
     lm=len(data) #length of the message
-    print("Data length"+str(lm))
+    print("Data length:"+str(lm))
 
     data_length = bin(lm)[2:].zfill(32) #Converts the length to binary and inserts zeros to ensure that first 32 bits contains the data length 
     
@@ -125,7 +125,7 @@ def encode(input_filepath,text,output_filepath,avg):
         #print("Your Stego Key: "+str(avg))
 
     
-    
+    lp=encoding_capacity-avg #Recalculating number of available pixels for encoding
         
     pixel_jump = int(lp / lm)  # Calculate pixel_jump based on available pixels and data length
     print(pixel_jump)
@@ -197,6 +197,7 @@ def decode(lm,avg,input_filepath):
         avg=k1
         #print("Your Stego Key: "+str(avg))
     data_length=lm
+    lp=encoding_capacity-avg #Number of available pixels for encoding
 
     pixel_jump=int(lp/lm)
     nb=data_length*7
