@@ -89,10 +89,13 @@ def encode(input_filepath,text,output_filepath,avg):
     data = text
     lm=len(data) #length of the message
     print("Data length:"+str(lm))
+    
 
     data_length = bin(lm)[2:].zfill(32) #Converts the length to binary and inserts zeros to ensure that first 32 bits contains the data length 
     
     bin_data = iter(str2bin(data))
+    lm=lm*7 #Number of binary bits in the data
+    
 
     img = imread(input_filepath,1)
     if img is None:
@@ -100,7 +103,7 @@ def encode(input_filepath,text,output_filepath,avg):
     
     height,width = img.shape[0],img.shape[1]
     encoding_capacity = height*width #working on single channel
-    total_bits = 32+len(data)*7
+    total_bits = len(data)*7
     if total_bits > encoding_capacity:
         raise DataError("The data size is too big to fit in this image!")
     completed = False
@@ -175,7 +178,6 @@ def encode(input_filepath,text,output_filepath,avg):
 
             
             b += pixel_jump  # Skip by pixel_jump
-            counter+=1
             
 
             if completed:
@@ -207,6 +209,7 @@ def decode(lm,avg,input_filepath):
         raise FileError("The image file '{}' is inaccessible".format(input_filepath))
     height,width = img.shape[0],img.shape[1]
     encoding_capacity = height*width
+    lm=lm*7 #number of binary bits in the data
  
     k1=avg #user provided stego key
 
@@ -216,7 +219,7 @@ def decode(lm,avg,input_filepath):
     if lm > lp:  # If the length of the data is larger than the number of available pixels
         k2 = encoding_capacity % lm  # Define a new stego key
         i = int(k2 / width)
-        j = (k2 - i * width)%width
+        j = k2 - i * width
         i += 1  # Increment i by 1
 
         lp = encoding_capacity - k2
@@ -224,7 +227,7 @@ def decode(lm,avg,input_filepath):
     else:
         # Retain the original stego key
         i = int(k1 / width)
-        j = (k1 - i * width)%width
+        j = k1 - i * width
         i+=1
 
         lp = encoding_capacity - k1
@@ -240,11 +243,8 @@ def decode(lm,avg,input_filepath):
     jjump = pixel_jump - ijump * width
     ijump+=1
     
-    nb=data_length*7
+    #nb=data_length*7 
     
-    counter=0
-    new_counter=0
-    res=0
     
     
     for a in range(i,height):
@@ -257,9 +257,8 @@ def decode(lm,avg,input_filepath):
             extracted_bits += 1
 
             b=b+pixel_jump
-            counter+=1
                 
-            if extracted_bits == nb: #If the number of the extracted bits matches the data length of binary bits
+            if extracted_bits == lm: #If the number of the extracted bits matches the data length of binary bits
                 completed = True
                 break
 
