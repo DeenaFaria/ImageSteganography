@@ -184,7 +184,7 @@ def encode(input_filepath,text,output_filepath,avg):
                 break
 
 
-        j=(b-width)%width   
+        j=b-width 
      
 
         if completed:
@@ -262,7 +262,7 @@ def decode(lm,avg,input_filepath):
                 completed = True
                 break
 
-        j=(b-width)%width
+        j=b-width
 
    
         if completed:
