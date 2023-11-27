@@ -138,21 +138,19 @@ def encode(input_filepath,text,output_filepath,avg):
     
 
     ijump = int(pixel_jump / width)
-    
+    jjump = (pixel_jump - ijump * width)%width
     ijump+=1
 
-    #print("i,j,ijump,jjump"+str(":")+str(i)+","+str(j)+","+str(ijump)+","+str(jjump))
+    print("i,j,ijump,jjump"+str(":")+str(i)+","+str(j)+","+str(ijump)+","+str(jjump))
     
     counter=0
     new_counter=0
     res=0
-    
 
 
     # Encoding process
     for a in range(i, height,ijump):
         b=j
-        jjump=0
         while b < width:
             pixel = img[a, b, 0]  # Seed pixel on red channel
             try:
@@ -170,7 +168,6 @@ def encode(input_filepath,text,output_filepath,avg):
 
             img[a, b, 0] = pixel
 
-            jjump = (pixel_jump - ijump * width)%width
             
             b += jjump  # Skip by pixel_jump
             counter+=1
@@ -180,7 +177,7 @@ def encode(input_filepath,text,output_filepath,avg):
                 break
 
 
-        j=(b-width)%width  
+        j=(b-width)%width   
      
 
         if completed:
@@ -232,7 +229,7 @@ def decode(lm,avg,input_filepath):
     pixel_jump=int(lp/lm)
 
     ijump = int(pixel_jump / width)
-    jjump = (pixel_jump - ijump * width)%width
+    jjump = pixel_jump - ijump * width
     ijump+=1
     
     nb=data_length*7
@@ -242,18 +239,14 @@ def decode(lm,avg,input_filepath):
     res=0
     
     
-    
     for a in range(i,height,ijump):
         b=j
-        jjump=0
         while b < width:
             pixel=img[a,b,0]
            
             result += str(pixel%2)
             
             extracted_bits += 1
-
-            jjump = (pixel_jump - ijump * width)%width
 
             b=b+jjump
             counter+=1
