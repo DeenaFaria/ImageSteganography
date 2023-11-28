@@ -14,33 +14,6 @@ from statistics import mean
 from math import log10, sqrt
 import cv2
 
-#Function for compressing image
-def con(im):
-    with open(im, 'rb') as f:
-         image_data = f.read()
-
-# Compress image data
-    compressed_data = zlib.compress(image_data)
-
-# Write compressed data to file
-    with open('compressed_image.zlib', 'wb') as f:
-         f.write(compressed_data)
-
-    return 'compressed_image.zlib'
-
-#Function for decompressing image
-def decom(im):
-    with open('compressed_image.zlib', 'rb') as f:
-         compressed_data = f.read()
-
-# Decompress data
-    image_data = zlib.decompress(compressed_data)
-
-# Write decompressed data to file
-    with open('decompressed_image.png', 'wb') as f:
-         f.write(image_data)
-
-    return 'decompressed_image.png'
 
 #Function for calculating the average of the stego key
 def avg(stego):
@@ -97,7 +70,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
     data_length = bin(lm)[2:].zfill(32) #Converts the length to binary and inserts zeros to ensure that first 32 bits contains the data length 
     
     bin_data = iter(str2bin(data))
-    lm=lm*7
+    lm=lm*7 #Length of binary data
     
 
     img = imread(input_filepath,1)
@@ -117,7 +90,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
     k1=avg #user provided stego key
 
     lp=encoding_capacity-avg #Number of available pixels for encoding
-    print("Old lp="+str(lp))
+    #print("Old lp="+str(lp))
     
     # Update the starting point (i, j) based on the stego key
     if lm > lp:  # If the length of the data is larger than the number of available pixels
@@ -125,7 +98,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
         i = int(k2 / width)
         j = k2 - i * width
         i += 1  # Increment i by 1
-        print("k2:"+str(k2))
+        #print("k2:"+str(k2))
 
         lp = encoding_capacity - k2
  
@@ -134,29 +107,18 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
         i = int(k1 / width)
         j = k1 - i * width
         i+=1
-        print("k1:"+str(k1))
+        #print("k1:"+str(k1))
 
         lp = encoding_capacity - k1
         
-    print("Encoding capacity:"+str(encoding_capacity))
-    print("New lp="+str(lp))
+    #print("Encoding capacity:"+str(encoding_capacity))
+    #print("New lp="+str(lp))
 
 
-    print("width"+str(width))    
+    #print("width"+str(width))    
     pixel_jump = int(lp / lm)  # Calculate pixel_jump based on available pixels and data length
-    print(pixel_jump)
+    #print(pixel_jump)
 
-    
-
-    ijump = int(pixel_jump / width)
-    jjump = (pixel_jump - ijump * width)%width
-    ijump+=1
-
-    #print("i,j,ijump,jjump"+str(":")+str(i)+","+str(j)+","+str(ijump)+","+str(jjump))
-    
-    counter=0
-    new_counter=0
-    res=0
 
 
     # Encoding process
@@ -212,7 +174,7 @@ def decode(lm,avg,input_filepath,password=None):
         raise FileError("The image file '{}' is inaccessible".format(input_filepath))
     height,width = img.shape[0],img.shape[1]
     encoding_capacity = height*width
-    lm=lm*7
+    lm=lm*7 #Length of binary data
  
     k1=avg #user provided stego key
 
@@ -236,19 +198,12 @@ def decode(lm,avg,input_filepath,password=None):
         lp = encoding_capacity - k1
    
 
-    print("Encoding capacity:"+str(encoding_capacity))
-    print("Lp:"+str(lp))
+    #print("Encoding capacity:"+str(encoding_capacity))
+    #print("Lp:"+str(lp))
     data_length=lm
    
     pixel_jump=int(lp/lm)
-
-    ijump = int(pixel_jump / width)
-    jjump = pixel_jump - ijump * width
-    ijump+=1
-    
-    #nb=data_length*7 #number of binary bits in the data
-    
-    
+      
     
     for a in range(i,height):
         b=j
