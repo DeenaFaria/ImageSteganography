@@ -1,0 +1,11 @@
+SSIM between original and stego images: 0.9999966596150998
+Standard Deviation: 26.187895193433253
+Cosine Similarity: 0.99608857058309
+T-test p-value: 0.0
+Chi-Squared Test p-value: 0.0
+Entropy: 20.4736894436005
+PSNR: 84.89386380567986 dB
+Estimated Payload: 696672 bits
+
+GeekForGeeks:
+PSNR value is 80.48643276959326 dB

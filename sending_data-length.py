@@ -64,7 +64,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
     else:
         data = text
     lm=len(data) #length of the message
-    print("Data length:"+str(lm))
+    #print("Data length:"+str(lm))
     
 
     data_length = bin(lm)[2:].zfill(32) #Converts the length to binary and inserts zeros to ensure that first 32 bits contains the data length
@@ -130,7 +130,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
         i = int(k2 / width)
         j = k2 - i * width
         i += 1  # Increment i by 1
-        print("k2:"+str(k2))
+        #print("k2:"+str(k2))
 
         lp = encoding_capacity - k2
  
@@ -139,7 +139,7 @@ def encode(input_filepath,text,output_filepath,avg,password=None):
         i = int(k1 / width)
         j = k1 - i * width
         i+=1
-        print("k1:"+str(k1))
+        #print("k1:"+str(k1))
 
         lp = encoding_capacity - k1
         
@@ -220,7 +220,7 @@ def decode(avg,input_filepath,password=None):
             if extracted_bits == 32:
                 data_length = int(result,2) #data length in integer
                 lm=data_length*7
-                print("data length="+str(data_length))
+                #print("data length="+str(data_length))
                 completed=True
                 break
 
@@ -230,7 +230,7 @@ def decode(avg,input_filepath,password=None):
     k1=avg#user provided stego key
 
     lp=encoding_capacity-k1 #Number of available pixels for encoding
-    print("Old lp="+str(lp))
+    #print("Old lp="+str(lp))
     
     # Update the starting point (i, j) based on the stego key
     if lm > lp:  # If the length of the data is larger than the number of available pixels
@@ -238,7 +238,7 @@ def decode(avg,input_filepath,password=None):
         i = int(k2 / width)
         j = k2 - i * width
         i += 1  # Increment i by 1
-        print("k2:"+str(k2))
+        #print("k2:"+str(k2))
 
         lp = encoding_capacity - k2
  
@@ -247,7 +247,7 @@ def decode(avg,input_filepath,password=None):
         i = int(k1 / width)
         j = k1 - i * width
         i+=1
-        print("k1:"+str(k1))
+        #print("k1:"+str(k1))
 
         lp = encoding_capacity - k1
     
@@ -329,7 +329,7 @@ if __name__ == "__main__":
         else:
    
             print("Encoded Successfully!\n")
-            value = PSNR(original, Encoded)
+            value = PSNR(original, stegoImage)
             print(f"PSNR value is {value} dB")
             Encoded = cv2.imread(op_file)
             cv2.imshow("original image", original)
